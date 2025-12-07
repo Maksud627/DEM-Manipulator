@@ -1,0 +1,211 @@
+﻿<Window
+    x:Class="DEMModifier.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="DEM Modifier Tool"
+    Width="1000"
+    Height="700"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!--  Base DEM  -->
+            <RowDefinition Height="*" />
+            <!--  Standard Layers  -->
+            <RowDefinition Height="*" />
+            <!--  Filtered Layers  -->
+            <RowDefinition Height="Auto" />
+            <!--  Action Buttons  -->
+        </Grid.RowDefinitions>
+
+        <!--  1. Base DEM Section  -->
+        <GroupBox
+            Grid.Row="0"
+            Margin="0,0,0,10"
+            Padding="10"
+            Header="1. Base Raster (DEM)">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="TxtDemPath"
+                    Height="25"
+                    VerticalContentAlignment="Center"
+                    IsReadOnly="True" />
+                <Button
+                    Grid.Column="1"
+                    Margin="10,0,0,0"
+                    Click="BtnBrowseDem_Click"
+                    Content="Browse..." />
+            </Grid>
+        </GroupBox>
+
+        <!--  2. Standard Layers Section  -->
+        <GroupBox
+            Grid.Row="1"
+            Margin="0,0,0,10"
+            Padding="10"
+            Header="2. Standard Layers (Apply to ALL features)">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                    <Button
+                        Width="150"
+                        Height="25"
+                        Background="#E3F2FD"
+                        Click="BtnAddStandardLayer_Click"
+                        Content="+ Add Standard Layer" />
+                    <Button
+                        Width="120"
+                        Height="25"
+                        Margin="10,0,0,0"
+                        Click="BtnRemoveStandardLayer_Click"
+                        Content="Remove Selected" />
+                </StackPanel>
+
+                <DataGrid
+                    x:Name="GridStandardLayers"
+                    Grid.Row="1"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    GridLinesVisibility="Horizontal"
+                    HeadersVisibility="Column"
+                    RowHeight="35">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="3*"
+                            Binding="{Binding FileName}"
+                            Header="Shapefile"
+                            IsReadOnly="True" />
+                        <DataGridTemplateColumn Width="2*" Header="Height Attribute (e.g. ELEV)">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                                        Margin="2"
+                                        VerticalContentAlignment="Center"
+                                        ItemsSource="{Binding AvailableAttributes}"
+                                        SelectedItem="{Binding SelectedAttribute, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+
+        <!--  3. Filtered Layers Section  -->
+        <GroupBox
+            Grid.Row="2"
+            Margin="0,0,0,10"
+            Padding="10"
+            Header="3. Filtered Layers (Specific Types Only)">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                    <Button
+                        Width="150"
+                        Height="25"
+                        Background="#FFF3E0"
+                        Click="BtnAddFilteredLayer_Click"
+                        Content="+ Add Filtered Layer" />
+                    <Button
+                        Width="120"
+                        Height="25"
+                        Margin="10,0,0,0"
+                        Click="BtnRemoveFilteredLayer_Click"
+                        Content="Remove Selected" />
+                </StackPanel>
+
+                <DataGrid
+                    x:Name="GridFilteredLayers"
+                    Grid.Row="1"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    GridLinesVisibility="Horizontal"
+                    HeadersVisibility="Column"
+                    RowHeight="35">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="200"
+                            Binding="{Binding FileName}"
+                            Header="Shapefile"
+                            IsReadOnly="True" />
+
+                        <DataGridTemplateColumn Width="150" Header="Height Attribute">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                                        Margin="2"
+                                        VerticalContentAlignment="Center"
+                                        ItemsSource="{Binding AvailableAttributes}"
+                                        SelectedItem="{Binding SelectedAttribute, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="150" Header="Filter Column (e.g. Type)">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                                        Margin="2"
+                                        VerticalContentAlignment="Center"
+                                        ItemsSource="{Binding AvailableAttributes}"
+                                        SelectedItem="{Binding FilterColumn, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="*" Header="Filter Values">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="5"
+                                        Click="BtnFilterValues_Click"
+                                        Content="{Binding FilterSummary}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+
+        <!--  4. Actions  -->
+        <StackPanel Grid.Row="3" Margin="0,10,0,0">
+            <ProgressBar
+                x:Name="ProgressBar"
+                Height="10"
+                Margin="0,0,0,10"
+                IsIndeterminate="True"
+                Visibility="Hidden" />
+            <Grid>
+                <TextBlock
+                    x:Name="TxtStatus"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Text="Ready" />
+                <Button
+                    Width="200"
+                    Height="40"
+                    HorizontalAlignment="Right"
+                    Background="#2E7D32"
+                    Click="BtnProcess_Click"
+                    Content="GENERATE MODIFIED DEM"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Foreground="White" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
